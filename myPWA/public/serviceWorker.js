@@ -2,21 +2,12 @@ const assetsToCache = [ // The list of filepaths starting from public that shoul
   "/",
   "manifest.json",
   "index.html",
-  "html/albumsPage.html",
-  "html/artistsPage.html",
-  "html/songsPage.html",
-  "css/navBar.css",
-  "js/navBar.js",
-  "js/albumSearchRetriever.js",
-  "js/artistSearchRetriever.js",
-  "js/songSearchRetriever.js",
   "js/initServiceWorker.js",
   "icons/pwaLogo128px.png",
   "icons/pwaLogo192px.png",
   "icons/pwaLogo384px.png",
   "icons/pwaLogo512px.png",
   "images/pwaLogoImage.png",
-  "images/magnifyingGlass.png"
 ];
 
 const cachedAssetsList = "cachedAssetsList"; // Name of the cache.

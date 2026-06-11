@@ -1,10 +1,10 @@
 {
-  "name": "PatternsWaveformsArtists",
-  "short_name": "PWA",
+  "name": "Tablegen",
+  "short_name": "Tgen",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#808080",
+  "background_color": "#FFFFFF",
+  "theme_color": "#A9A9A9",
   "orientation": "portrait-primary",
   "icons": [
     {

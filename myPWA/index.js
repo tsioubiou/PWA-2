@@ -3,16 +3,6 @@ const path = require("path");
 const queryRunner = require("./queryRunner.js"); // Use this to run the query function.
 const app = express();
 
-app.get("/api", async (request, response) => {
-    try {
-        var result = await queryRunner.runQuery(request.query.query); // Returns an array of each query result.
-        response.json(result); // Send the array back to the client.
-    }
-    catch(error) {
-        console.log("Error happened: " + error);
-    }
-});
-
 app.use(express.static(path.join(__dirname, "public"))); // Lock serving files to only inside public folder.
 
 app.get("/", function (request, response) {

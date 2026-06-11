@@ -1,17 +1,16 @@
 {
-  "name": "pwa",
+  "name": "tablegen",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A timetable generator made primarily for schools but that can be used for other organisations too.",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Mario Gianna",
+  "license": "GPL-3.0-only",
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^5.1.0",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^6.0.1"
   }
 }
