@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang = "en">
+    <head>
+        <meta charset = "UTF-8"/>
+        <meta name = "viewport" content = "width=device-width, initial-scale=1.0"/>
+        <meta http-equiv = "Content-Security-Policy" content = "script-src 'self';"/>
+
+        <link rel = "manifest" href = "../manifest.json" crossorigin = "use-credentials">
+
+        <title>Tablegen: School Page</title>
+    </head>
+
+    <body>
+        <!-- School Page -->
+        <h1>Gimme your school info</h1>
+        <form id = "schoolInfoForm">
+            <input type = "file" placeholder = "Input Teacher List (accepted formats: .txt, .csv)" accept = ".csv, .txt, .json"> 
+            <fieldset>
+                <input type = "text" placeholder = "Faculty Name" required/>
+                <div style = "margin-top: 10px; margin-bottom: 10px; margin-left: 20px;">
+                    <input type = "text" placeholder = "Teacher Name" required/>
+                    <button type = "button" class = "addTeacherBtn">Add Teacher</button>
+                </div>
+            </fieldset>
+            <button type = "button" id = "addFacultyBtn">Add Faculty</button>
+            <button type = "submit" form = "schoolInfoForm">Submit</button>
+        </form>
+    </body>
+
+    <script src = "../js/createTimetable.js"></script>
+    <script src = "../js/initServiceWorker.js"></script>
+</html>
