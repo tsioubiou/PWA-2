@@ -23,7 +23,8 @@ app.post("/timetable", function (request, response) {
     formData = new Map();
     formData.set("faculties", new Map(Object.entries(request.body.formData)));
     formData.set("parkingSpots", parseInt(request.body.parkingSpots));
-    timetableCalculator.generateTimetable(formData);
+    queryRunner.saveTimetable(timetableCalculator.generateTimetable(formData));
+    response.send("/html/schoolPage.html");
 });
 
 // Listen to port 8000.

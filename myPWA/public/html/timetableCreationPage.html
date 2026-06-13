@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang = "en">
+    <head>
+        <meta charset = "UTF-8"/>
+        <meta name = "viewport" content = "width=device-width, initial-scale=1.0"/>
+        <meta http-equiv = "Content-Security-Policy" content = "script-src 'self';"/>
+
+        <link rel = "manifest" href = "../manifest.json" crossorigin = "use-credentials">
+
+        <title>Tablegen: Generate timetable</title>
+    </head>
+
+    <body>
+        <!-- School Page -->
+        <h1>School Information</h1>
+        <form id = "schoolInfoForm">
+            <p>If you have a file containing a list of teachers for each faculty, upload it here.</p>
+            <p>The file's name will be used as the faculty name, and each file should contain a list of teachers for that faculty.</p>
+            <p>Files will be used to automatically fill the faculty and teacher information, but you will still be able to edit the information after the upload.</p>
+            <p>Upload files will automatically delete any existing information. Upload any files you have first, then fill in other information afterwards.</p>
+            <p>Accepted file formats: .txt.</p>
+            <input type = "file" accept = ".txt" id = "fileInput" multiple/>
+            <button type = "button" id = "fileUploadBtn">Upload Files</button>
+            <p>You can also skip the file upload and input the information manually below.</p>
+            <fieldset>
+                <input type = "text" placeholder = "Faculty Name" required/>
+                <div>
+                    <input type = "text" placeholder = "Teacher Name" required/>
+                    <button type = "button" class = "addTeacherBtn">Add Teacher</button>
+                    <button type = "button" class = "removeTeacherBtn">Remove Teacher</button>
+                </div>
+            </fieldset>
+            <button type = "button" id = "addFacultyBtn">Add Faculty</button>
+            <button type = "button" id = "removeFacultyBtn">Remove Faculty</button>
+            <input type = "number" id = "parkingSpotsInput" placeholder = "Parking Spots" required/>
+            <button type = "submit" form = "schoolInfoForm">Submit</button>
+        </form>
+    </body>
+
+    <script src = "../js/createTimetable.js"></script>
+    <script src = "../js/initServiceWorker.js"></script>
+</html>

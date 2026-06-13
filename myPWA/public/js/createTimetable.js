@@ -37,6 +37,9 @@ form.addEventListener("submit", function(event) {
             "Content-Type": "application/json"
         },
         body: formDataAsJSON
+    }).then(response => response.text())
+    .then(url => {
+        window.location.href = url;
     })
 });
 

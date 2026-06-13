@@ -87,5 +87,5 @@ exports.generateTimetable = function generateTimetable(formData) {
         }
     }
 
-    console.log(timetable);
+    return timetable;
 }
