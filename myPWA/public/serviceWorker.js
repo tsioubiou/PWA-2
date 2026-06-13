@@ -1,7 +1,6 @@
 const assetsToCache = [ // The list of filepaths starting from public that should be cached.
   "/",
   "manifest.json",
-  "index.html",
   "html/schoolPage.html",
   "js/initServiceWorker.js",
   "js/createTimetable.js",
