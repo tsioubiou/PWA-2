@@ -11,9 +11,46 @@
   </head>
 
   <body>
-    <!-- Register/Signup Page -->
-    <a href="html/timetableCreationPage.html">Go to the timetable page.</a>
+    <div name = "register/login">
+      <button type = "button" id = "registerBtn" class = "non-formBtns">Register</button>
+      <button type = "button" id = "loginBtn" class = "non-formBtns">Login</button>
+    </div>
+    <div name = "staff/school" hidden>
+      <button type = "button" id = "staffBtn" class = "non-formBtns">Staff</button>
+      <button type = "button" id = "schoolBtn" class = "non-formBtns">School</button>
+    </div>
+    <div name = "formFields" hidden>
+      <form id = "regsta" action = "/regsta" method = "post">
+        <h1>Register as staff</h1>
+        <input type = "text" name = "username" placeholder = "Set Username" required/>
+        <input type = "text" name = "password" placeholder = "Set Password" required/>
+        <input type = "text" name = "schoolName" placeholder = "Enter School Name" required/>
+        <input type = "text" name = "schoolPassword" placeholder = "Enter School Password" required/>
+        <button type = "submit">Submit</button>
+      </form>
+      <form id = "logsta">
+        <h1>Log in as staff</h1>
+        <input type = "text" name = "username" placeholder = "Enter Username" required/>
+        <input type = "text" name = "password" placeholder = "Enter Password" required/>
+        <button type = "submit">Submit</button>
+      </form>
+      <form id = "regsch" action = "/checkTimetable" method = "get">
+          <h1>Register as a school</h1>
+          <input type = "text" name = "schoolName" placeholder = "Set School Name" required/>
+          <input type = "text" name = "schoolPassword" placeholder = "Set School Password" required/>
+          <input type = "text" name = "adminPassword" placeholder = "Set Your Password" required/>
+          <button type = "submit">Submit</button>
+      </form>
+      <form id = "logsch">
+        <h1>Log in as a school</h1>
+        <input type = "text" name = "schoolName" placeholder = "Enter School Name" required/>
+        <input type = "text" name = "adminPassword" placeholder = "Enter Your Password" required/>
+        <button type = "submit">Submit</button>
+      </form>
+    </div>
+    <button type = "button" id = "cancelBtn">Cancel</button>
   </body>
 
+  <script src = "js/auth.js"></script>
   <script src = "js/initServiceWorker.js"></script>
 </html>

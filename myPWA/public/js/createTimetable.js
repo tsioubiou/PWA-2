@@ -150,3 +150,9 @@ function asyncFileReader(file, type) {
         reader.readAsText(file);
     });
 }
+
+const cancelBtn = document.getElementById("cancelBtn");
+
+cancelBtn.addEventListener("click", function(event) {
+    window.location.href = "/html/schoolPage.html"
+});

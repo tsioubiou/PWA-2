@@ -11,6 +11,7 @@ const httpsSettings = {
     cert: fs.readFileSync("cert.pem")
 };
 
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // Middleware to parse JSON bodies.
 
 app.use(express.static(path.join(__dirname, "public"))); // Lock serving files to only inside public folder.
@@ -26,6 +27,17 @@ app.post("/timetable", function (request, response) {
     queryRunner.saveTimetable(timetableCalculator.generateTimetable(formData));
     response.send("/html/schoolPage.html");
 });
+
+app.get("/checkTimetable", function(request, response) {
+    response.json(queryRunner.getTimetable(request));
+});
+
+app.post("/regsta", function(request, resoponse) {
+    if (request.body.password.length < 8){
+        return request.send("Your password must be at least 8 characters long");
+    }
+    request.body.username, request.body.password, request.body.schoolName, request.body.schoolPassword;
+})
 
 // Listen to port 8000.
 https.createServer(httpsSettings, app).listen(8000, () => console.log("Server is running on Port 8000, visit https://localhost:8000/ or https://127.0.0.1:8000 to access your website"));

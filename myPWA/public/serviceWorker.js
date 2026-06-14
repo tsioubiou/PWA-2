@@ -1,9 +1,13 @@
 const assetsToCache = [ // The list of filepaths starting from public that should be cached.
   "/",
   "manifest.json",
+  "index.html",
+  "html/timetableCreationPage.html",
   "html/schoolPage.html",
   "js/initServiceWorker.js",
+  "js/auth.js",
   "js/createTimetable.js",
+  "js/manageTimetable.js",
   "icons/pwaLogo128px.png",
   "icons/pwaLogo192px.png",
   "icons/pwaLogo384px.png",
@@ -39,7 +43,7 @@ self.addEventListener("activate", (activateEvt) => { // Go to activate.
 
 self.addEventListener("fetch", (fetchEvt) => { // When fetch event is fired.
   fetchEvt.respondWith(fetch(fetchEvt.request).catch((error) => { // Respond with what the server serves for the request.
-    console.log("Server dont wanna play along cuz: " + error);
+    console.log("Server dont wanna play along cuz: " + error + " " + fetchEvt.request.url);
     return caches.open(cachedAssetsList).then((cacheEditor) => { // If theres an error when getting the requested file.
       console.log("Unable to fetch requested file, serving from cache instead.")
       return cacheEditor.match(fetchEvt.request); // Try get it from the cache instead (maybe offline).
