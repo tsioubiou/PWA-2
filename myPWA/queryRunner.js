@@ -35,7 +35,7 @@ exports.registerStaff = async function registerStaff(username, password, schoolN
     }
     const registerStaff = db.prepare("INSERT INTO StaffTable (Username, Password, SchoolName) VALUES (?, ?, ?)");
     registerStaff.run(username, password, schoolName);
-    return "Account created."
+    return "Account created. Please restart the page before logging in."
 }
 
 exports.logStaff = async function logStaff(username, password) {
@@ -56,9 +56,16 @@ exports.registerSchool = function registerSchool(schoolName, schoolPassword, adm
     }
     const registerSchool = db.prepare("INSERT INTO SchoolTable (SchoolName, SchoolPassword, AdminPassword) VALUES (?, ?, ?)");
     registerSchool.run(schoolName, schoolPassword, adminPassword);
-    return "Account created."
+    return "Account created. Please restart the page before logging in."
 }
 
-exports.logSchool = function logSchool() {
-    
+exports.logSchool = async function logSchool(schoolName, adminPassword) {
+    const adminPasswordCheck = db.prepare("SELECT adminPassword FROM SchoolTable WHERE schoolName = ?").get(schoolName).AdminPassword;
+    if (typeof adminPasswordCheck === "undefined") {
+        return "Credentials do not match."
+    }
+    else if (!(await bcrypt.compare(adminPassword, adminPasswordCheck))) {
+        return "Credentials do not match."
+    }
+    return "Credentials match."
 }

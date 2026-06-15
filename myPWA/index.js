@@ -21,7 +21,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: true
+        secure: true,
     }
 }));
 
@@ -65,12 +65,18 @@ app.post("/regsta", [validator.body("*").isString().escape(), validator.body(["u
     response.send(result);
 })
 
-app.get("/logsta", [validator.body("*").isString().escape(), validator.body("username").trim()], function(request, response) {
+app.post("/logsta", [validator.body("*").isString().escape(), validator.body("username").trim()], async function(request, response) {
     if(!validator.validationResult(request).isEmpty()) {
         console.log(validator.validationResult(request));
         return response.send("Invalid inputs, make sure all the fields have text.");
     }
-    const result = queryRunner.logStaff(request.body.username, request.body.password + process.env.PEPPER);
+    const result = await queryRunner.logStaff(request.body.username, request.body.password + process.env.PEPPER);
+    if (result != "Credentials match.") {
+        return response.send(result);
+    }
+    request.session.id = request.body.username;
+    request.session.role = "Staff";
+    request.session.loggedIn = true;
     return response.send(result);
 })
 
@@ -88,10 +94,27 @@ app.post("/regsch", [validator.body("*").isString().escape(), validator.body("sc
     response.send(result);
 })
 
-/*app.get("/logsch", [validator.body("*").isString().escape(), validator.body("schoolName").trim()], function(request, response) {
+app.post("/logsch", [validator.body("*").isString().escape(), validator.body("schoolName").trim()], async function(request, response) {
     if(!validator.validationResult(request).isEmpty()) {
         console.log(validator.validationResult(request));
         return response.send("Invalid inputs, make sure all the fields have text.");
+    }
+    const result = await queryRunner.logSchool(request.body.schoolName, request.body.adminPassword + process.env.PEPPER);
+    if (result != "Credentials match.") {
+        return response.send(result);
+    }
+    request.session.id = request.body.schoolName;
+    request.session.role = "School";
+    request.session.loggedIn = true;
+    return response.send(result);
+})
+
+/*app.get("/schoolPage", function(request, response) {
+    if (!request.session.loggedIn) {
+        return response.redirect("/");
+    }
+    else if (request.session.role != "School") {
+        return response.redirect("/");
     }
 })*/
 
