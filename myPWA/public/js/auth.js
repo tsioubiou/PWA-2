@@ -3,6 +3,36 @@ const stasch = document.getElementsByName("staff/school")[0];
 const formFields = document.getElementsByName("formFields")[0];
 const forms = formFields.children
 const choices = []
+const dropdowns = document.querySelectorAll(".dropdown");
+schools = []
+
+fetch("/getSchools", {
+    method: "GET",
+}).then(response => {return response.json()}).then(schoolList => {schools = schoolList; updateDropdowns()});
+
+function updateDropdowns() {
+    if (schools.length > 0) {
+        for (const dropdown of dropdowns) {
+            for (const school of schools) {
+                dropdown.appendChild(
+                    Object.assign(document.createElement("option"), {
+                        value: school,
+                        text: school
+                    })
+                )
+            }
+        }
+    }
+    else {
+        for (const dropdown of dropdowns) {
+            dropdown.parentElement.replaceChildren(
+                Object.assign(document.createElement("p"), {
+                textContent: "There are no schools currently registered."
+                })
+            )
+        }
+    }
+}
 
 document.addEventListener("click", function(event) {
     if (event.target.className === "non-formBtns") {
@@ -16,6 +46,13 @@ document.addEventListener("click", function(event) {
             formFields.hidden = false;
             showCorrectForm();
         }
+    }
+    else if (event.target.type === "submit") {
+        event.preventDefault();
+        fetch (`/${event.target.parentElement.id}`, {
+            method: "POST",
+            body: new URLSearchParams(new FormData(event.target.parentElement))
+        }).then(response => {return response.text()}).then(msg => console.log(msg));
     }
 });
 

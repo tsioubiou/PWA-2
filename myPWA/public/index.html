@@ -20,11 +20,13 @@
       <button type = "button" id = "schoolBtn" class = "non-formBtns">School</button>
     </div>
     <div name = "formFields" hidden>
-      <form id = "regsta" action = "/regsta" method = "post">
+      <form id = "regsta">
         <h1>Register as staff</h1>
         <input type = "text" name = "username" placeholder = "Set Username" required/>
         <input type = "text" name = "password" placeholder = "Set Password" required/>
-        <input type = "text" name = "schoolName" placeholder = "Enter School Name" required/>
+        <select name = "schoolName" class = "dropdown">
+          <option value = "" disabled selected>Enter School Name</option>
+        </select>
         <input type = "text" name = "schoolPassword" placeholder = "Enter School Password" required/>
         <button type = "submit">Submit</button>
       </form>
@@ -35,15 +37,17 @@
         <button type = "submit">Submit</button>
       </form>
       <form id = "regsch" action = "/checkTimetable" method = "get">
-          <h1>Register as a school</h1>
-          <input type = "text" name = "schoolName" placeholder = "Set School Name" required/>
-          <input type = "text" name = "schoolPassword" placeholder = "Set School Password" required/>
-          <input type = "text" name = "adminPassword" placeholder = "Set Your Password" required/>
-          <button type = "submit">Submit</button>
+        <h1>Register as a school</h1>
+        <input type = "text" name = "schoolName" placeholder = "Set School Name" required/>
+        <input type = "text" name = "schoolPassword" placeholder = "Set School Password" required/>
+        <input type = "text" name = "adminPassword" placeholder = "Set Your Admin Password" required/>
+        <button type = "submit">Submit</button>
       </form>
       <form id = "logsch">
         <h1>Log in as a school</h1>
-        <input type = "text" name = "schoolName" placeholder = "Enter School Name" required/>
+        <select name = "schoolName" class = "dropdown">
+          <option value = "" disabled selected>Enter School Name</option>
+        </select>
         <input type = "text" name = "adminPassword" placeholder = "Enter Your Password" required/>
         <button type = "submit">Submit</button>
       </form>

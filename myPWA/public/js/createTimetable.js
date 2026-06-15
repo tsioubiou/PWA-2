@@ -70,14 +70,14 @@ addFaculty.addEventListener("click", function() {
         type: "button",
         className: "addTeacherBtn"
     })
-    addTeacherBtn.innerHTML = "Add Teacher"
+    addTeacherBtn.textContent = "Add Teacher"
     teachersDiv.appendChild(addTeacherBtn);
 
     removeTeacherBtn = Object.assign(document.createElement("button"), {
         type: "button",
         className: "removeTeacherBtn"
     });
-    removeTeacherBtn.innerHTML = "Remove Teacher";
+    removeTeacherBtn.textContent = "Remove Teacher";
     teachersDiv.appendChild(removeTeacherBtn);
 
     addFaculty.insertAdjacentElement("beforebegin", fieldset);
