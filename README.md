@@ -2,7 +2,9 @@
 My submission for the second Software Engineering PWA Assessment Task.
 
 Instructions:
-Just open up the terminal , type in "npm start", and click on any of the links that show up.
+Open up the terminal, and type in "npm start".
+Since the app uses a https connection, you need to right click on the port under the ports tab, and choose "HTTPS" connection.
+
 
 Description:
 A school parking timetable generator.
