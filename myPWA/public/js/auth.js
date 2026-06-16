@@ -8,6 +8,7 @@ schools = []
 
 fetch("/getSchools", {
     method: "GET",
+    credentials: "same-origin"
 }).then(response => {return response.json()}).then(schoolList => {schools = schoolList; updateDropdowns()});
 
 function updateDropdowns() {
@@ -34,7 +35,7 @@ function updateDropdowns() {
     }
 }
 
-document.addEventListener("click", function(event) {
+document.addEventListener("click", async function(event) {
     if (event.target.className === "non-formBtns") {
         choices.push(event.target);
         if (event.target.parentElement == reglog) {
@@ -49,10 +50,22 @@ document.addEventListener("click", function(event) {
     }
     else if (event.target.type === "submit") {
         event.preventDefault();
-        fetch (`/${event.target.parentElement.id}`, {
+        const result = await fetch(`/${event.target.parentElement.id}`, {
             method: "POST",
+            credentials: "same-origin",
             body: new URLSearchParams(new FormData(event.target.parentElement))
-        }).then(response => {return response.text()}).then(msg => console.log(msg));
+        });
+        if (result.redirected) {
+            window.location.href = result.url;
+        }
+        else {
+            const resultMsg = await result.text();
+            if (typeof resultElement === "undefined"){
+                resultElement = document.createElement("p")
+                document.body.appendChild(resultElement);
+            }
+            resultElement.textContent = resultMsg
+        }
     }
 });
 
@@ -63,6 +76,9 @@ cancelBtn.addEventListener("click", function(event) {
     stasch.hidden = true;
     formFields.hidden = true;
     choices.length = 0;
+    if (typeof resultElement !== "undefined") {
+        resultElement.textContent = ""
+    }
 });
 
 const reg = document.getElementById("registerBtn")

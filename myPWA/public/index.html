@@ -11,6 +11,7 @@
   </head>
 
   <body>
+    <h1>Welcome to Tablegen</h1>
     <div name = "register/login">
       <button type = "button" id = "registerBtn" class = "non-formBtns">Register</button>
       <button type = "button" id = "loginBtn" class = "non-formBtns">Login</button>
@@ -21,7 +22,7 @@
     </div>
     <div name = "formFields" hidden>
       <form id = "regsta">
-        <h1>Register as staff</h1>
+        <h2>Register as staff</h2>
         <input type = "text" name = "username" placeholder = "Set Username" required/>
         <input type = "text" name = "password" placeholder = "Set Password" required/>
         <select name = "schoolName" class = "dropdown">
@@ -31,20 +32,20 @@
         <button type = "submit">Submit</button>
       </form>
       <form id = "logsta">
-        <h1>Log in as staff</h1>
+        <h2>Log in as staff</h2>
         <input type = "text" name = "username" placeholder = "Enter Username" required/>
         <input type = "text" name = "password" placeholder = "Enter Password" required/>
         <button type = "submit">Submit</button>
       </form>
       <form id = "regsch" action = "/checkTimetable" method = "get">
-        <h1>Register as a school</h1>
+        <h2>Register as a school</h2>
         <input type = "text" name = "schoolName" placeholder = "Set School Name" required/>
         <input type = "text" name = "schoolPassword" placeholder = "Set School Password" required/>
         <input type = "text" name = "adminPassword" placeholder = "Set Your Admin Password" required/>
         <button type = "submit">Submit</button>
       </form>
       <form id = "logsch">
-        <h1>Log in as a school</h1>
+        <h2>Log in as a school</h2>
         <select name = "schoolName" class = "dropdown">
           <option value = "" disabled selected>Enter School Name</option>
         </select>

@@ -1,13 +1,15 @@
 const form = document.getElementById("schoolInfoForm");
 const parkingSpotsInput = document.getElementById("parkingSpotsInput");
+let currentFaculty;
+let errorMsg;
 
-form.addEventListener("submit", function(event) {
+form.addEventListener("submit", async function(event) {
     event.preventDefault();
 
     const formData = new Map();
-    teachers = [];
+    let teachers = [];
 
-    for ([fieldNumber, field] of Object.entries(form.elements)) {
+    for (const [fieldNumber, field] of Object.entries(form.elements)) {
         if (field.placeholder === "Faculty Name") {
             if (teachers.length > 0) {
                 formData.set(currentFaculty, teachers);
@@ -30,17 +32,35 @@ form.addEventListener("submit", function(event) {
         }
     }
     formData.set(currentFaculty, teachers);
-    formDataAsJSON = JSON.stringify({formData: Object.fromEntries(formData), parkingSpots: parkingSpotsInput.value});
-    fetch("/timetable", {
+    const formDataAsJSON = JSON.stringify({formData: Object.fromEntries(formData), parkingSpots: parkingSpotsInput.value});
+    const response = await fetch("/createTimetable", {
         method: "POST",
+        credentials: "same-origin",
         headers: {
             "Content-Type": "application/json"
         },
         body: formDataAsJSON
-    }).then(response => response.text())
-    .then(url => {
-        window.location.href = url;
-    })
+    });
+    try {
+        redirect = await response.json()
+        if (typeof redirect !== "undefined") {
+            alert(redirect.alertText);
+            window.location.href = redirect.url
+        }
+    }
+    catch {
+        if (response.redirected) {
+            window.location.href = response.url;
+        }
+        else {
+            const text = await response.text();
+            if (typeof errorMsg === "undefined") {
+                errorMsg = document.createElement("p");
+                form.appendChild(errorMsg);
+            }
+            errorMsg.textContent = text;
+        }
+    }
 });
 
 const addFaculty = document.getElementById("addFacultyBtn");
@@ -133,7 +153,7 @@ fileUploadBtn.addEventListener("click", async function(event) {
             }
         }
         catch (error) {
-            console.log(error);
+            console.log("THERES AN ERROR HELP: " + error);
         }
     }
 });
@@ -145,7 +165,7 @@ function asyncFileReader(file, type) {
             resolve(event.target.result.split(/\r?\n/).filter(line => line.trim() !== ""));
         };
         reader.onerror = function() {
-            reject(reader.error);
+            reject("EROROORORO: " + reader.error);
         };
         reader.readAsText(file);
     });
@@ -153,6 +173,19 @@ function asyncFileReader(file, type) {
 
 const cancelBtn = document.getElementById("cancelBtn");
 
-cancelBtn.addEventListener("click", function(event) {
-    window.location.href = "/html/schoolPage.html"
+cancelBtn.addEventListener("click", async function(event) {
+    const result = await fetch("/schoolPage", {
+        method: "GET",
+        credentials: "same-origin"
+    })
+    try {
+        redirect = await result.json()
+        if (typeof redirect !== "undefined") {
+            alert(redirect.alertText);
+            window.location.href = redirect.url
+        }
+    }
+    catch {
+        window.location.href = result.url;
+    }
 });

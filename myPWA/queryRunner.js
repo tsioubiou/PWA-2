@@ -2,18 +2,24 @@ const bcrypt = require("bcrypt");
 const Database = require("better-sqlite3");
 const db = new Database("database/datasource.db");
 
-// Exports make it so you can refernece the script and use the exported function like sqlite3 above.
 exports.saveTimetable = function saveTimetable(schoolName, timetable) {
-    const preparedQuery = db.prepare("UPDATE SchoolDatabase SET SchoolTimetable = ? WHERE SchoolName = ?");
+    const preparedQuery = db.prepare("UPDATE SchoolTable SET SchoolTimetable = ? WHERE SchoolName = ?");
     preparedQuery.run(JSON.stringify(Array.from(timetable.entries())), schoolName);
 }
 
-exports.getTimetable = function getTimetable(schoolName) {
-    const preparedQuery = db.prepare("SELECT SchoolTimetable FROM SchoolTable WHERE SchoolName = ?")
-    if (typeof preparedQuery.get(schoolName) === "undefined") {
+exports.getTimetable = function getTimetable(anyUserName, anyUserRole) {
+    schoolName = ""
+    if (anyUserRole == "Staff") {
+        schoolName = db.prepare("SELECT SchoolName FROM StaffTable WHERE Username = ?").get(anyUserName).SchoolName;
+    }
+    else {
+        schoolName = anyUserName;
+    }
+    const timetableRow = db.prepare("SELECT SchoolTimetable FROM SchoolTable WHERE SchoolName = ?").get(schoolName)
+    if (timetableRow.SchoolTimetable === null) {
         return "empty";
     }
-    return JSON.parse(preparedQuery.get(schoolName).SchoolTimetable);
+    return JSON.parse(timetableRow.SchoolTimetable);
 }
 
 exports.deleteTimetable = function deleteTimetable(schoolName) {
@@ -39,11 +45,11 @@ exports.registerStaff = async function registerStaff(username, password, schoolN
 }
 
 exports.logStaff = async function logStaff(username, password) {
-    const passwordCheck = db.prepare("SELECT Password FROM StaffTable WHERE Username = ?").get(username).Password;
+    const passwordCheck = db.prepare("SELECT Password FROM StaffTable WHERE Username = ?").get(username);
     if (typeof passwordCheck === "undefined") {
         return "Credentials do not match."
     }
-    else if (!(await bcrypt.compare(password, passwordCheck))) {
+    else if (!(await bcrypt.compare(password, passwordCheck.Password))) {
         return "Credentials do not match."
     }
     return "Credentials match."
