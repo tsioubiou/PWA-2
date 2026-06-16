@@ -2,7 +2,7 @@
     "remote.portsAttributes": {
         "8000": {
             "protocol": "https",
-            "label": "App HTTPS",
+            "label": "Tablegen",
             "onAutoForward": "openBrowser"
         }
     }
