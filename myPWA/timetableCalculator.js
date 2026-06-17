@@ -5,6 +5,7 @@ exports.generateTimetable = function generateTimetable(formData) {
     const parkingSpots = formData.get("parkingSpots");
     const teachersPerFaculty = new Map();
 
+    // Counts how many teachers are in each faculty, saving it to teachersPerFaculty
     for (const [facultyName, teachers] of faculties) {
         noOfTeachers += teachers.length;
         teachersPerFaculty.set(facultyName, teachers.length);
@@ -15,6 +16,7 @@ exports.generateTimetable = function generateTimetable(formData) {
     // Creating a rough numbered timetable
     const numberedTimetable = new Map();
 
+    // Works by first excluding the cycleLengths remainder, and then going back with the remainder and adding one to each index until there is no more remainder
     for ([facultyName, teacherCount] of teachersPerFaculty) {
         const teachersPerCycle = [];
         const teachersPerDay = Math.floor(teacherCount / cycleLength);
@@ -29,10 +31,13 @@ exports.generateTimetable = function generateTimetable(formData) {
             teachersPerCycle[day] += 1;
         }
 
+        // With this you end up with more teachers being distributed toward the start of a cycle, and vacant spots toward the end
         numberedTimetable.set(facultyName, teachersPerCycle);
     }
 
+    // Which is why you need this next step
     // Creating a correct numbered timetable
+    // It adds up the total teachers every day, and if it exceeds the parking limit, it moves the extra to the next day
     for (day = 0; day < cycleLength; day++) {
         remainingSpots = parkingSpots;
 
@@ -54,11 +59,14 @@ exports.generateTimetable = function generateTimetable(formData) {
             }
         }
     }
+    // The result is saved to numberedTimetable
 
     // Creating a named timetable
     const namedTimetable = new Map();
     const namesRemaining = structuredClone(faculties);
 
+    // For every day of teachersPerDay, namedTimetable takes day amount of teachers from faculties until faculties is empty
+    // If there are still vacant spots after every teacher is assigned a spot, it takes from the beginning of the original faculties map again
     for (const[facultyName, teachersPerDay] of numberedTimetable) {
         namedTimetable.set(facultyName, [])
         for (const day of teachersPerDay) {
@@ -80,6 +88,8 @@ exports.generateTimetable = function generateTimetable(formData) {
     // Expanding the timetable to be 2 weeks long
     const timetable = new Map();
 
+    // Modulus will never return a bigger number than the denominator - 1, meaning it will always give an index from 0 to length - 1
+    // It will loop until it has filled up 10 days (a fortnight - weekends)
     for (const[facultyName, namedCycle] of namedTimetable) {
         timetable.set(facultyName, []);
         for (day = 0; day < 10; day++) {
