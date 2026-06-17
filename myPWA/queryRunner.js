@@ -23,7 +23,7 @@ exports.getTimetable = function getTimetable(anyUserName, anyUserRole) {
 }
 
 exports.deleteTimetable = function deleteTimetable(schoolName) {
-    
+    db.prepare("UPDATE SchoolTable SET SchoolTimetable = NULL WHERE SchoolName = ?").run(schoolName)
 }
 
 exports.getSchools = function getSchools() {

@@ -1,63 +1,95 @@
-timetableDiv = document.getElementById("timetableDiv")
+const timetableDiv = document.getElementById("timetableDiv")
+const tableBodyWk1 = document.getElementById("tableBodyWk1")
+const tableBodyWk2 = document.getElementById("tableBodyWk2")
+const facultyColoursKey = document.getElementById("facultyColoursKey")
+let hue = 0.45;
+const facultyColours = []
 
-function displayTimetable(timetableData) {
-    const tableBodyWk1 = document.getElementById("tableBodyWk1")
-    const tableBodyWk2 = document.getElementById("tableBodyWk2")
-    console.log(timetableData);
-    
-    const cycleLength = timetableData.values().next().value.length;
-    
-    for (const [faculty, teachersPerDay] of timetableData) {
-        // Week 1 row (days 0-4)
-        const row1 = document.createElement("tr")
-        const cell1 = document.createElement("td")
-        cell1.textContent = faculty
-        row1.appendChild(cell1)
-        
+function generateRandomColor() {
+    hue += 0.618033988749895;
+    if (hue > 1) {
+        hue -= 1;
+    }
+
+    const hueDegrees = Math.floor(hue * 360);
+
+    return `hsl(${hueDegrees}, ${80}%, ${60}%)`;
+}
+
+function generateFacultyColours(timetable) {
+    for ([facultyName, teachers] of timetable) {
+        facultyColours.push(generateRandomColor())
+        facultyColourKey = Object.assign(document.createElement("p"), {
+            textContent: facultyName
+        })
+        facultyColourKey.style.color = facultyColours[facultyColours.length - 1]
+        facultyColoursKey.appendChild(facultyColourKey)
+    }
+}
+
+function generateWeek(weekBody, startDay, timetable) {
+    const teachersPerDay = []
+    const coloursPerDay = []
+
+    for (let currentDay = 0; currentDay < 5; currentDay++) {
+        const day = startDay + currentDay
+        const teachersForThisDay = []
+        const coloursForThisDay = []
+        let facultyNumber = 0
+
+        for (const teachersForEachFaculty of timetable.values()) {
+            const teachersFromThisFaculty = teachersForEachFaculty[day]
+            teachersForThisDay.push(...teachersFromThisFaculty)
+            for (const teacher of teachersFromThisFaculty) {
+                coloursForThisDay.push(facultyColours[facultyNumber])
+            }
+            facultyNumber += 1
+        }
+
+        teachersPerDay.push(teachersForThisDay)
+        coloursPerDay.push(coloursForThisDay);
+    }
+
+    for (let cell = 0; cell < teachersPerDay[0].length; cell++) {
+        const row = document.createElement("tr")
+
         for (let day = 0; day < 5; day++) {
-            const cell = document.createElement("td")
-            cell.textContent = teachersPerDay[day % cycleLength]
-            row1.appendChild(cell)
+            const cellElement = document.createElement("td")
+            const teacher = teachersPerDay[day][cell]
+            const colour = coloursPerDay[day][cell]
+            cellElement.textContent = teacher
+            cellElement.style.backgroundColor = colour
+            row.appendChild(cellElement)
         }
-        tableBodyWk1.appendChild(row1)
-        
-        // Week 2 row (days 5-9)
-        const row2 = document.createElement("tr")
-        const cell2 = document.createElement("td")
-        cell2.textContent = faculty
-        row2.appendChild(cell2)
-        
-        for (let day = 5; day < 10; day++) {
-            const cell = document.createElement("td")
-            cell.textContent = teachersPerDay[day % cycleLength]
-            row2.appendChild(cell)
-        }
-        tableBodyWk2.appendChild(row2)
+
+        weekBody.appendChild(row)
     }
 }
 
 document.addEventListener("DOMContentLoaded", async function() {
-    const timetable = await fetch("/getTimetable", {
+    const timetableResult = await fetch("/getTimetable", {
         credentials: "same-origin"
     });
-    const timetableText = await timetable.json();
-    if (timetableText === "empty") {
+    const timetableData = await timetableResult.json();
+    if (timetableData === "empty") {
         timetableDiv.replaceChildren(
             Object.assign(document.createElement("p"), {
                 textContent: "A timetable has not been created for your school."
             })
         );
     }
-    else if ("alertText" in timetableText) {
-        alert(timetableText.alertText);
-        window.location.href = timetableText.url
+    else if ("alertText" in timetableData) {
+        alert(timetableData.alertText);
+        window.location.href = timetableData.url
     }
     else {
-        const timetableData = Array.isArray(timetableText) ? new Map(timetableText) : timetableText;
+        const timetable = new Map(timetableData)
         if (document.title == "Tablegen: Schools") {
             createReplaceBtn.textContent = "Replace";
             deleteBtn.hidden = false;
         }
-        displayTimetable(timetableData);
+        generateFacultyColours(timetable)
+        generateWeek(tableBodyWk1, 0, timetable)
+        generateWeek(tableBodyWk2, 5, timetable)
     }
 })

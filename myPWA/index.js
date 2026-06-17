@@ -14,20 +14,44 @@ const httpsSettings = {
     cert: fs.readFileSync("cert.pem")
 };
 
-function checkSession(request, response, role) {
+function getHomePage(response, alert) {
+    response.json({url: "/index.html", alertText: alert});
+}
+
+async function checkSession(request, response, role) {
     if (!request.session.loggedIn) {
-        response.redirect(`/homePage?alert=${"Detected attempt to access the website without logging in. Log in first to use the site."}`);
-        request.session.destroy()
-        response.clearCookie("connect.sid")
+        request.session.destroy(err => {
+            if (err) {
+                return getHomePage(response, "Detected attempt to access the website without logging in. Log in first to use the site.")
+            }
+            response.clearCookie("connect.sid", {path: "/"})
+            getHomePage(response, "Detected attempt to access the website without logging in. Log in first to use the site.")
+        })
         return true;
     }
     else if (request.session.role != role) {
-        response.redirect(`/homePage?alert=${"Detected attempt to access a "}${role}${" page with "}${request.session.role}${" credentials. Log in as a "}${role}${" first."}`);
-        request.session.destroy()
-        response.clearCookie("connect.sid")
+        const currentRole = request.session.role;
+        request.session.destroy(err => {
+            if (err) {
+                return getHomePage(response, `${"Detected attempt to access a "}${role}${" page with "}${currentRole}${" credentials. Log in as a "}${role}${" first."}`)
+            }
+            response.clearCookie("connect.sid", {path: "/"})
+            getHomePage(response, `${"Detected attempt to access a "}${role}${" page with "}${currentRole}${" credentials. Log in as a "}${role}${" first."}`)
+        })
         return true;
     }
     return false;
+}
+
+function clearCookies(request, response) {
+    return new Promise((resolve) => {
+        request.session.destroy(err => {
+            if (!err) {
+                response.clearCookie("connect.sid", { path: "/" });
+                resolve();
+            }
+        })
+    })
 }
 
 app.use(express.urlencoded({ extended: false }));
@@ -38,17 +62,20 @@ app.use(session({
     saveUninitialized: false,
     cookie: {
         secure: true,
+        httpOnly: true
     }
 }));
 
-app.use(express.static(path.join(__dirname, "public"))); // Lock serving files to only inside public folder.
-
-app.get("/", function (request, response) {
+app.get("/", async function (request, response) {
+    await clearCookies(request, response);
     response.sendFile(path.join(__dirname, "public/index.html")); // Get index.html when first loading in.
 });
 
-app.get("/homePage", function (request, response) {
-    response.json({url: "/index.html", alertText: request.query.alert});
+app.use(express.static(path.join(__dirname, "public"))); // Lock serving files to only inside public folder.
+
+app.get("/getHomePage", async function(request, response) {
+    await clearCookies(request, response);
+    getHomePage(response, "Successfully logged out.")
 })
 
 app.get("/getSchools", function(request, response) {
@@ -113,26 +140,26 @@ app.post("/logsch", [validator.body("*").isString().escape(), validator.body("sc
     response.redirect("/schoolPage");
 })
 
-app.get("/schoolPage", function(request, response) {
-    if (checkSession(request, response, "School")) {
+app.get("/schoolPage", async function(request, response) {
+    if (await checkSession(request, response, "School")) {
         return;
     }
     response.redirect("/html/schoolPage.html");
 })
 
-app.get("/staffPage", function(request, response) {
-    if (checkSession(request, response, "Staff")) {
+app.get("/staffPage", async function(request, response) {
+    if (await checkSession(request, response, "Staff")) {
         return;
     }
     response.redirect("/html/staffPage.html");
 })
 
 app.post("/createTimetable", [validator.body("parkingSpots").isInt().escape().trim(), validator.body("formData").custom(type => {
-    if (typeof type !== "object") {throw new Error("Invalid Form Data")} return true})], function (request, response) {
+    if (typeof type !== "object") {throw new Error("Invalid Form Data")} return true})], async function (request, response) {
         if (!validator.validationResult(request).isEmpty()) {
             return response.send("Invalid inputs, make sure all the fields have text.");
         }
-        if (checkSession(request, response, "School")) {
+        if (await checkSession(request, response, "School")) {
             return;
         }
         const formData = new Map();
@@ -143,24 +170,36 @@ app.post("/createTimetable", [validator.body("parkingSpots").isInt().escape().tr
     }
 );
 
-app.get("/getTimetable", function(request, response) {
-    if (checkSession(request, response, request.session.role)) {
+app.get("/getTimetable", async function(request, response) {
+    if (await checkSession(request, response, request.session.role)) {
         return;
     }
     response.json(queryRunner.getTimetable(request.session.username, request.session.role));
 });
 
-app.get("/timetableCreationPage", function(request, response) {
-    if (checkSession(request, response, "School")) {
+app.post("/deleteTimetable", async function(request, response) {
+    if (await checkSession(request, response, request.session.role)) {
+        return;
+    }
+    queryRunner.deleteTimetable(request.session.username);
+    response.send("Timetable deleted, refresh to see changes.");
+})
+
+app.get("/timetableCreationPage", async function(request, response) {
+    if (await checkSession(request, response, "School")) {
         return;
     }
     response.redirect("/html/timetableCreationPage.html");
 })
 
 app.post("/logout", function(request, response) {
-    request.session.destroy()
-    response.clearCookie("connect.sid")
-    response.redirect(`/homePage?alert=${"The tab has been out of focus for too long, and the session has timed out. Log in again to use the site."}`);
+    request.session.destroy(err => {
+        if (err) {
+            return getHomePage(response, "The tab has been out of focus for too long, and the session has timed out. Log in again to use the site.")
+        }
+        response.clearCookie("connect.sid", {path: "/"})
+        getHomePage(response, "The tab has been out of focus for too long, and the session has timed out. Log in again to use the site.")
+    })
 });
 
 https.createServer(httpsSettings, app).listen(8000, () => console.log("Server is running on Port 8000, visit https://localhost:8000/ or https://127.0.0.1:8000 to access your website."));
